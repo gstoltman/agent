@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-
-
 def main():
     load_dotenv()
 
@@ -35,8 +33,6 @@ def main():
         print("Response:")
 
     print(response.text)
-
-
 
 if __name__ == "__main__":
     main()
