@@ -1,5 +1,6 @@
 import os
 from config import CHAR_LIMIT
+from google.genai import types
 
 def get_file_content(working_directory, file_path):
     abs_working_directory = os.path.abspath(working_directory)
@@ -17,3 +18,17 @@ def get_file_content(working_directory, file_path):
         return 'Error: Invalid start byte'
 
     return file_content_string
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Lists files content from a given path.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file to list the content from.",
+            ),
+        },
+    ),
+)
