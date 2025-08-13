@@ -4,7 +4,7 @@ def call_function(function_call_part, verbose=False):
     else:
         print(f" - Calling function: {function_call_part.name}")
     if response.function_calls is not None:
-        # We are building these
+        # We are building these, look into kwargs
         if function_call_part.name == 'get_files_info':
         if function_call_part.name == 'get_file_content'
         if function_call_part.name == 'run_python_file'
