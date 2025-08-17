@@ -23,7 +23,7 @@ def main():
 
     if verbose:
         print(f"User prompt: {user_prompt}\n")
-
+ 
     api_key = os.environ.get("GEMINI_API_KEY")
     client = genai.Client(api_key=api_key)
 
@@ -33,12 +33,6 @@ def main():
 
     result = generate_content(client, messages, verbose)
 
-    #if isinstance(result, list):
-    #    for r in result:
-    #        print(r)
-    #else:
-    #    print(result)
-
 def generate_content(client, messages, verbose):
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
@@ -47,9 +41,6 @@ def generate_content(client, messages, verbose):
             tools=[available_functions], system_instruction=system_prompt
         ),
     )
-    #if verbose:
-    #    print("Prompt tokens:", response.usage_metadata.prompt_token_count)
-    #    print("Response tokens:", response.usage_metadata.candidates_token_count)
 
     if not response.function_calls:
         return response.text

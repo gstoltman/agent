@@ -20,7 +20,7 @@ def get_files_info(working_directory, directory="."):
 
     for content in contents_list:
         if content.startswith('__'):
-            break
+            continue
         content_path = os.path.join(full_path, content)
         file_size = os.path.getsize(content_path)
         is_dir = os.path.isdir(content_path)
@@ -37,7 +37,7 @@ schema_get_files_info = types.FunctionDeclaration(
             "directory": types.Schema(
                 type=types.Type.STRING,
                 description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
-            ),
+            )
         },
     ),
 )
