@@ -16,7 +16,9 @@ def main():
             args.append(arg)
 
     if not args:
-        print("ERROR")
+        print("AI Code Assistant")
+        print('\nUsage: python main.py "your prompt here" [--verbose]')
+        print('Example: python main.py "How do I fix the calculator?"')
         sys.exit(1)
 
     user_prompt = " ".join(args)
@@ -31,7 +33,7 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
-    result = generate_content(client, messages, verbose)
+    generate_content(client, messages, verbose)
 
 def generate_content(client, messages, verbose):
     response = client.models.generate_content(
@@ -45,13 +47,20 @@ def generate_content(client, messages, verbose):
     if not response.function_calls:
         return response.text
 
-    tool_responses = []
+    function_responses = []
     for function_call_part in response.function_calls:
-        tool_response = call_function(function_call_part, verbose=verbose)
-        tool_responses.append(tool_response)
+        function_call_result = call_function(function_call_part, verbose)
+        if (
+            not function_call_result.parts
+            or not function_call_result.parts[0].function_response
+        ):
+            raise Exception("empty function call result")
+        if verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+        function_responses.append(function_call_result.parts[0])
 
-    return tool_responses
-
+    if not function_responses:
+        raise Exception("no function responses generated, exiting.")
 
 if __name__ == "__main__":
     main()
