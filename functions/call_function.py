@@ -21,6 +21,7 @@ def call_function(function_call_part, verbose=False):
         )
     else:
         print(f" - Calling function: {function_call_part.name}")
+        
     function_map = {
         "get_files_info": get_files_info,
         "get_file_content": get_file_content,

@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 from prompts import system_prompt
 from functions.call_function import call_function, available_functions
+from config import MAX_ITERS
 
 def main():
     load_dotenv()
@@ -33,7 +34,21 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
-    generate_content(client, messages, verbose)
+    iters = 0
+    while True:
+        iters += 1
+        if iters > MAX_ITERS:
+            print(f"Maximum iterations ({MAX_ITERS}) reached.")
+            sys.exit(1)
+
+        try:
+            final_response = generate_content(client, messages, verbose)
+            if final_response:
+                print("Final response:")
+                print(final_response)
+                break
+        except Exception as e:
+            print(f"Error in generate_content: {e}")
 
 def generate_content(client, messages, verbose):
     response = client.models.generate_content(
@@ -55,27 +70,23 @@ def generate_content(client, messages, verbose):
             or not function_call_result.parts[0].function_response
         ):
             raise Exception("empty function call result")
+        
+        if response.candidates:
+            for i in response.candidates:
+                messages.append(i.content)
 
-        result_text = function_call_result.parts[0].function_response.response
+        result_text = function_call_result.parts[0].function_response.response["result"]
 
         if verbose:
             print(f"-> {result_text}")
 
-        message_content = types.Content(
-            role="user",
-            parts=[types.Part(text=result_text)],
-        )
-
-        messages.append(message_content)
-        #function_responses.append(function_call_result.parts[0])
+        function_responses.append(function_call_result.parts[0])
 
     if not function_responses:
         raise Exception("no function responses generated, exiting.")
 
-    if response.candidates:
-        for i in response.candidates:
-            messages.append(i.content)
-
+    message_content = types.Content(role="user", parts=function_responses)
+    messages.append(message_content)
     
 
 if __name__ == "__main__":
